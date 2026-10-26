@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Event simulator{% endblock %}
+{% block crumbs %}Operate <span aria-hidden="true">/</span> <span class="current">Event simulator</span>{% endblock %}
+{% block heading %}Security event simulator{% endblock %}
+{% block subheading %}Every scenario calls <span class="mono">POST /api/simulate</span> and is written to SQLite. No host files or real networks are touched.{% endblock %}
+{% block content %}
+<div class="row" style="justify-content:space-between;align-items:center;margin-top:-6px">
+  <span class="demo-chip" style="display:inline-flex">Simulated demonstration · events are stored with origin “simulated”</span>
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('pages.rules') }}">{{ icon("rules", "i-sm") }}Detection rules</a>
+</div>
+{% if not has_role("analyst") %}
+<div class="callout warn">Your role (Viewer) can watch simulations but cannot run them. Sign in as an analyst or administrator to execute scenarios.</div>
+{% endif %}
+
+<section class="card playback rise" aria-label="Guided scenario playback">
+  <div class="card-head">
+    <div>
+      <div class="section-label" style="color:#7FDFF7">Guided scenario · simulated demonstration</div>
+      <h2 style="font-size:18px;margin-top:4px">Repeated failed login investigation</h2>
+      <div class="sub">Seven steps through the real backend. A step turns green only after the server has answered.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+      <label class="field">Target account
+        <select class="select" id="playUser" style="width:auto;min-width:170px"></select>
+      </label>
+      <button class="btn" type="button" id="playReset">Reset</button>
+      <button class="btn btn-primary" type="button" id="playRun" {% if not has_role("analyst") %}disabled{% endif %}>{{ icon("play", "i-sm") }}Run scenario</button>
+    </div>
+  </div>
+  <ol class="play-steps" id="playSteps"></ol>
+  <div id="playOutcome"></div>
+</section>
+
+<div class="row">
+  <div class="stack grow-3">
+    <section class="card rise rise-1" aria-label="Preset scenarios">
+      <div class="card-head"><h2>Preset scenarios</h2><span class="dim" style="font-size:12px">Choose one to fill the form, then execute</span></div>
+      <div class="presets" id="presets"><div class="skeleton" style="height:104px"></div></div>
+    </section>
+    <form class="card rise rise-2" id="simForm" aria-label="Event parameters" novalidate>
+      <div class="card-head"><h2>Event parameters</h2><span class="pill origin simulated" id="modeTag">Preset</span></div>
+      <div class="filters" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+        <label class="field">Demo user<select class="select" name="user"></select></label>
+        <label class="field">Action<select class="select" name="action"></select></label>
+        <label class="field">Outcome<select class="select" name="outcome"></select></label>
+        <label class="field">Safe resource<select class="select" name="resource"></select></label>
+        <label class="field">Source IP (simulated label)<input class="input mono" name="ip" maxlength="45" placeholder="10.0.4.23"><span class="field-error hidden" data-err="ip"></span></label>
+        <label class="field">Repeat (1–20)<input class="input num" name="count" type="number" min="1" max="20" value="1"><span class="field-error hidden" data-err="count"></span></label>
+      </div>
+      <div class="row" style="align-items:center;justify-content:space-between">
+        <p style="margin:0;flex:1 1 280px;font-size:12.5px;line-height:1.55;color:var(--text-3)"><b style="color:var(--text)">Expected:</b> <span id="expect">—</span></p>
+        <button class="btn btn-primary btn-lg" type="submit" id="execBtn" {% if not has_role("analyst") %}disabled{% endif %}>{{ icon("play", "i-sm") }}Execute simulation</button>
+      </div>
+    </form>
+  </div>
+  <div class="stack grow-1">
+    <section class="card rise rise-2" aria-label="Backend result" aria-live="polite">
+      <div class="card-head"><h2>Backend result</h2></div>
+      <div id="result"><p class="muted" style="margin:0;font-size:13px;line-height:1.55">No simulation run yet on this page. The result appears only after the backend confirms the write.</p></div>
+    </section>
+    <section class="card rise rise-3" aria-label="Recent simulations">
+      <div class="card-head"><h2>Recent simulations</h2><a href="{{ url_for('pages.logs', origin='simulated') }}" style="font-size:12.5px">In audit log →</a></div>
+      <ul class="health" id="history"></ul>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/simulator.js') }}"></script>{% endblock %}

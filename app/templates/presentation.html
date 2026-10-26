@@ -1,0 +1,77 @@
+{% from "_macros.html" import icon, emblem %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Presentation mode · {{ app_name }}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="present-body" data-poll="{{ poll_interval }}" data-role="{{ current_user.role }}" data-user="{{ current_user.username }}" data-user-id="{{ current_user.id }}">
+{% include "_icons.html" %}
+<main class="present page-enter" id="main" tabindex="-1">
+  <header class="present-head">
+    <div style="display:flex;align-items:center;gap:12px">
+      {{ emblem(34) }}
+      <span style="font-size:15px;font-weight:700;letter-spacing:.2em">CYBERAUDIT MONITOR</span>
+      <span class="pill low" style="height:26px;font-size:12px;text-transform:none">Presentation mode</span>
+    </div>
+    <div style="flex:1 1 320px;display:flex;flex-direction:column;gap:6px;min-width:0">
+      <div style="display:flex;justify-content:space-between;gap:12px;font-size:13px"><span class="muted">Step <span id="stepN">1</span> of 8 · <b style="color:var(--text-strong)" id="stepTitle"></b></span><span class="clock" id="clock"></span></div>
+      <div class="progress-seg" id="progress"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="status-pill" id="backendStatus" role="status"><span class="dot"></span><span class="txt">Checking backend…</span></span>
+      <a class="btn btn-lg btn-ghost" href="{{ url_for('pages.dashboard', intro=1) }}">{{ icon("replay", "i-sm") }}Replay intro</a>
+      <a class="btn btn-lg" href="{{ url_for('pages.dashboard') }}">Exit to dashboard</a>
+    </div>
+  </header>
+
+  <div class="row" style="gap:20px">
+    <div class="stack" style="flex:2 1 640px;gap:20px">
+      <section class="metrics" aria-label="Key metrics" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+        <div class="big-metric"><span class="l">Total events</span><span class="v" data-m="total">–</span><span class="n" data-n="total"></span></div>
+        <div class="big-metric"><span class="l">Failed operations</span><span class="v" data-m="failed" style="color:var(--red-text)">–</span><span class="n" data-n="failed"></span></div>
+        <div class="big-metric"><span class="l">Open alerts</span><span class="v" data-m="open_alerts" style="color:var(--blue-text)">–</span><span class="n" data-n="open_alerts"></span></div>
+        <div class="big-metric"><span class="l">High severity</span><span class="v" data-m="high_alerts" style="color:var(--red-text)">–</span><span class="n" data-n="high_alerts"></span></div>
+      </section>
+
+      <section id="heroAlert" aria-label="Highlighted alert"></section>
+
+      <section class="card" aria-label="Quick scenario launcher" style="background:rgba(10,18,34,.85)">
+        <div class="card-head">
+          <div><h2 style="font-size:17px">Scenario launcher</h2><div class="sub">Runs the same <span class="mono">POST /api/simulate</span> as the simulator page · simulated demonstration</div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-lg" type="button" data-preset="failed_login" {% if not has_role("analyst") %}disabled{% endif %}>{{ icon("x-circle", "i-sm") }}Failed login</button>
+            <button class="btn btn-lg btn-primary" type="button" data-preset="multiple_failed_logins" {% if not has_role("analyst") %}disabled{% endif %}>{{ icon("play", "i-sm") }}Repeated failed logins</button>
+          </div>
+        </div>
+        <div id="launchResult" class="note-text" aria-live="polite">{% if not has_role("analyst") %}Sign in as an analyst or administrator to launch scenarios.{% else %}Results appear here after the backend confirms the write.{% endif %}</div>
+      </section>
+
+      <section class="card" aria-label="Live event stream" style="background:rgba(10,18,34,.85)">
+        <div class="card-head"><div style="display:flex;align-items:center;gap:12px"><h2 style="font-size:18px">Live security events</h2><span class="live-tag" id="liveTag"><span class="dot"></span><span class="txt">Connecting…</span></span></div></div>
+        <ul class="present-feed" id="feed" style="list-style:none;margin:0;padding:0"></ul>
+      </section>
+    </div>
+
+    <aside class="card" aria-label="Demonstration sequence" style="flex:1 1 340px;background:rgba(10,18,34,.85);position:sticky;top:16px">
+      <div>
+        <div class="section-label" style="color:#7FDFF7">Recommended sequence</div>
+        <div class="muted" style="font-size:13px;margin-top:4px">Every step opens the real feature — nothing here is a slide. Keys: ← → or PageUp / PageDown.</div>
+      </div>
+      <ol id="seq" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px"></ol>
+      <a class="btn btn-primary btn-lg" id="goBtn" href="#">Open step</a>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-lg" style="flex:1" type="button" id="prevBtn">← Previous</button>
+        <button class="btn btn-lg" style="flex:1" type="button" id="nextBtn">Next →</button>
+      </div>
+    </aside>
+  </div>
+</main>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="{{ url_for('static', filename='js/core.js') }}"></script>
+<script src="{{ url_for('static', filename='js/presentation.js') }}"></script>
+</body>
+</html>

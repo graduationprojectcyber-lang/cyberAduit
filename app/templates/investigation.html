@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}{{ alert_uid }} · Investigation{% endblock %}
+{% block crumbs %}Investigate <span aria-hidden="true">/</span> <a href="{{ url_for('pages.alerts') }}">Alerts</a> <span aria-hidden="true">/</span> <span class="current mono">{{ alert_uid }}</span>{% endblock %}
+{% block heading %}Incident investigation{% endblock %}
+{% block subheading %}Evidence, timeline and analyst actions for one alert{% endblock %}
+{% block content %}
+<div id="workspace" data-uid="{{ alert_uid }}" class="stack" style="gap:16px">
+  <div><a class="btn btn-ghost btn-sm" href="{{ url_for('pages.alerts') }}">{{ icon("arrow-left", "i-sm") }}Back to alerts</a></div>
+  <section class="card" id="summary" aria-label="Alert summary"><div class="skeleton" style="height:120px"></div></section>
+  <div class="row">
+    <div class="stack grow-3">
+      <section class="card" id="why" aria-label="Why this alert triggered"><div class="skeleton" style="height:160px"></div></section>
+      <section class="card" id="timelineCard" aria-label="Incident timeline">
+        <div class="card-head">
+          <div><h3>Incident timeline</h3><div class="sub">Evidence (red), context 30 min before and after, and analyst actions (cyan)</div></div>
+          <button class="btn btn-sm" type="button" id="rawBtn">{{ icon("eye", "i-sm") }}View raw trigger event</button>
+        </div>
+        <ol class="timeline" id="timeline"><li><div class="skeleton" style="height:200px;grid-column:1/-1"></div></li></ol>
+      </section>
+    </div>
+    <div class="stack grow-1">
+      <section class="card" id="entities" aria-label="Related entities"><div class="skeleton" style="height:140px"></div></section>
+      <section class="card" id="steps" aria-label="Recommended investigation steps"></section>
+      <section class="card" id="notes" aria-label="Analyst notes"></section>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/investigation.js') }}"></script>{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% from "_filter_options.html" import action_options, outcome_options, severity_options %}
+{% block title %}Reports{% endblock %}
+{% block crumbs %}Operate <span aria-hidden="true">/</span> <span class="current">Reports</span>{% endblock %}
+{% block heading %}Audit reports{% endblock %}
+{% block subheading %}Preview a period, then export it as CSV or a printable report (save as PDF from the print dialog){% endblock %}
+{% block content %}
+<form class="card rise" id="reportForm" aria-label="Report filters" novalidate>
+  <div class="card-head">
+    <div class="seg" role="group" aria-label="Report period" id="periodSeg">
+      <button type="button" data-period="24h" aria-pressed="false">Last 24 h</button>
+      <button type="button" data-period="7d" aria-pressed="true">Last 7 days</button>
+      <button type="button" data-period="30d" aria-pressed="false">Last 30 days</button>
+      <button type="button" data-period="custom" aria-pressed="false">Custom range</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      {% if has_role("analyst") %}
+      <a class="btn" id="csvBtn" href="#">{{ icon("download", "i-sm") }}Export CSV</a>
+      <a class="btn btn-primary" id="printBtn" href="#" target="_blank" rel="noopener">{{ icon("printer", "i-sm") }}Printable report</a>
+      {% else %}
+      <span class="note-text">Exports require the Security Analyst or Administrator role.</span>
+      {% endif %}
+    </div>
+  </div>
+  <div class="filters">
+    <label class="field">From<input class="input" type="date" name="start" disabled></label>
+    <label class="field">To<input class="input" type="date" name="end" disabled></label>
+    <label class="field">User<input class="input" type="text" name="actor" maxlength="64" placeholder="Any user"></label>
+    <label class="field">Action<select class="select" name="action">{{ action_options() }}</select></label>
+    <label class="field">Outcome<select class="select" name="outcome">{{ outcome_options() }}</select></label>
+    <label class="field">Severity<select class="select" name="severity">{{ severity_options() }}</select></label>
+  </div>
+  <div class="chips"><span class="muted" id="reportMeta" style="font-size:12.5px"></span>
+    <button class="btn btn-primary" type="submit" style="margin-left:auto">{{ icon("refresh", "i-sm") }}Update preview</button></div>
+</form>
+
+<div id="reportPreview" class="stack" style="gap:16px"></div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/reports.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Alerts{% endblock %}
+{% block crumbs %}Investigate <span aria-hidden="true">/</span> <span class="current">Alerts</span>{% endblock %}
+{% block heading %}Alert center{% endblock %}
+{% block subheading %}Rule-based detections that require analyst review{% endblock %}
+{% block content %}
+<form class="card rise" id="alertFilters" aria-label="Filter alerts" novalidate>
+  <div class="card-head">
+    <div class="seg" role="group" aria-label="Status" id="statusSeg">
+      <button type="button" data-status="unresolved" aria-pressed="true">Unresolved <span class="num dim" data-count="unresolved"></span></button>
+      <button type="button" data-status="open" aria-pressed="false">Open <span class="num dim" data-count="open"></span></button>
+      <button type="button" data-status="acknowledged" aria-pressed="false">Acknowledged <span class="num dim" data-count="acknowledged"></span></button>
+      <button type="button" data-status="resolved" aria-pressed="false">Resolved <span class="num dim" data-count="resolved"></span></button>
+      <button type="button" data-status="" aria-pressed="false">All <span class="num dim" data-count="all_count"></span></button>
+    </div>
+    <span class="muted" id="alertCount" style="font-size:12.5px" aria-live="polite"></span>
+  </div>
+  <div class="filters">
+    <label class="field">Search<input class="input" type="search" name="q" placeholder="Title, user, IP or ALR-0001" maxlength="100"></label>
+    <label class="field">Severity
+      <select class="select" name="severity"><option value="">Any severity</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="critical">Critical</option></select>
+    </label>
+    <label class="field">Rule
+      <select class="select" name="rule"><option value="">Any rule</option><option value="R-01">R-01 · Repeated failed logins</option><option value="R-02">R-02 · Multiple accounts from one IP</option><option value="R-03">R-03 · Repeated authorization denials</option><option value="R-04">R-04 · Excessive file deletions</option><option value="R-05">R-05 · Sensitive administrative changes</option></select>
+    </label>
+    <label class="field">From<input class="input" type="date" name="start"></label>
+    <label class="field">To<input class="input" type="date" name="end"></label>
+  </div>
+</form>
+
+<section class="card rise rise-2" aria-label="Alert list" style="padding:0;gap:0;overflow:hidden">
+  <div class="table-wrap" style="border:0;border-radius:0">
+    <table class="table" style="min-width:980px">
+      <thead><tr>
+        <th scope="col">Alert</th><th scope="col">Title</th><th scope="col">Rule</th><th scope="col">Severity</th>
+        <th scope="col">Status</th><th scope="col">Related</th><th scope="col">Triggered</th><th scope="col" class="right">Events</th><th scope="col"><span class="sr-only">Open</span></th>
+      </tr></thead>
+      <tbody id="alertRows"></tbody>
+    </table>
+  </div>
+</section>
+<p class="note-text">Alerts mean a rule's threshold was met — “suspicious activity requires investigation”. A matched pattern alone does not prove that an attack took place.</p>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/alerts.js') }}"></script>{% endblock %}

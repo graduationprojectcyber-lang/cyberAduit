@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Security overview{% endblock %}
+{% block crumbs %}Monitor <span aria-hidden="true">/</span> <span class="current">Overview</span>{% endblock %}
+{% block heading %}Security overview{% endblock %}
+{% block subheading %}{{ app_subtitle }}{% endblock %}
+{% block content %}
+<div id="dash" class="stack {% if play_intro %}dash-hold{% endif %}" style="gap:20px" data-intro="{{ 1 if play_intro else 0 }}">
+  <section class="metrics" aria-label="Summary metrics">
+    {% set cards = [
+      ("total", "Total events", "activity", "cyan", "up-good"),
+      ("success", "Successful", "check", "green", "up-good"),
+      ("failed", "Failed", "x-circle", "red", "up-bad"),
+      ("denied", "Denied", "ban", "amber", "up-bad"),
+      ("open_alerts", "Open alerts", "bell", "blue", "up-bad"),
+      ("high_alerts", "High severity", "alert", "red", "up-bad")] %}
+    {% for key, label, ic, accent, polarity in cards %}
+    <a class="metric accent-{{ accent }} rise rise-{{ loop.index }}" href="{{ url_for('pages.alerts') if 'alerts' in key else url_for('pages.logs') }}{{ {'success': '?outcome=success', 'failed': '?outcome=failed', 'denied': '?outcome=denied'}.get(key, '') }}" style="color:inherit" data-card="{{ key }}" data-polarity="{{ polarity }}">
+      <div class="metric-top"><span class="metric-label">{{ label }}</span><span class="metric-icon">{{ icon(ic) }}</span></div>
+      <div class="metric-value" data-value="0"><span class="skeleton" style="display:inline-block;width:80px;height:26px"></span></div>
+      <div class="metric-trend"><span class="trend"></span><span class="trend-note"></span></div>
+    </a>
+    {% endfor %}
+  </section>
+
+  <section class="row">
+    <div class="card grow-2 rise rise-3">
+      <div class="card-head">
+        <div><h2>Event volume</h2><div class="sub" id="rangeLabel">Recorded operations by outcome</div></div>
+        <div class="seg" role="group" aria-label="Time range" id="rangeSeg">
+          <button type="button" data-range="24h" aria-pressed="true">24 h</button>
+          <button type="button" data-range="7d" aria-pressed="false">7 days</button>
+          <button type="button" data-range="30d" aria-pressed="false">30 days</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span class="key"><span class="swatch" style="background:#27D8FF"></span>Successful <b id="legSuccess">–</b></span>
+        <span class="key"><span class="swatch" style="background:#F0506E"></span>Failed <b id="legFailed">–</b></span>
+        <span class="key"><span class="swatch" style="background:#F5B547"></span>Denied <b id="legDenied">–</b></span>
+        <span class="mono dim" style="margin-left:auto;font-size:11.5px">hover or use ← → for values</span>
+      </div>
+      <div id="volumeChart" aria-describedby="rangeLabel"></div>
+      <div class="chart-axis" id="volumeAxis"></div>
+    </div>
+    <div class="card grow-1 rise rise-4">
+      <div class="card-head"><div><h2>Event distribution</h2><div class="sub">By action type · all recorded events</div></div></div>
+      <div class="donut-wrap"><div class="donut" id="donut"></div><ul class="dist-list" id="distList"></ul></div>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="card grow-2 rise rise-5">
+      <div class="card-head">
+        <div><h2>Network activity</h2><div class="sub">Relationships built from audit records · last 24 h · addresses are simulated labels, not geolocated</div></div>
+        <div class="legend-dots" aria-hidden="true">
+          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="none" stroke="#27D8FF" stroke-width="1.5"/></svg>Protected app</span>
+          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="none" stroke="#6F8BB5" stroke-width="1.5"/></svg>Source IP</span>
+          <span><svg width="10" height="10"><rect x="1" y="1" width="8" height="8" rx="2" fill="none" stroke="#8FA3C2" stroke-width="1.5"/></svg>Account</span>
+          <span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="#F0506E"/></svg>Under investigation</span>
+        </div>
+      </div>
+      <div class="net-wrap">
+        <div class="net-canvas" id="netCanvas"><div class="skeleton" style="height:300px"></div></div>
+        <aside class="net-detail" id="netDetail" aria-live="polite"></aside>
+      </div>
+      <div class="node-chips" id="netChips" role="group" aria-label="Select a node"></div>
+    </div>
+    <div class="card grow-1 rise rise-6">
+      <div class="card-head"><div><h2>System health</h2><div class="sub">Live checks from <span class="mono">/api/health</span> every 15 s</div></div></div>
+      <ul class="health" id="healthList">
+        <li><span class="hd"></span><span class="hl">Checking…</span></li>
+      </ul>
+      <div class="note-text" style="margin-top:auto;border-top:1px solid var(--line-soft);padding-top:12px">
+        Health values come from real backend and database checks. Security activity shown on this page comes from seeded demo data, the event simulator and real sign-ins to this app.
+      </div>
+    </div>
+  </section>
+
+  <section class="card rise rise-6" aria-label="Live security event stream">
+    <div class="card-head">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h2>Live security event stream</h2><span class="live-tag" id="liveTag"><span class="dot"></span><span class="txt">Connecting…</span></span></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-sm" type="button" id="pauseBtn" aria-pressed="false">{{ icon("pause", "i-sm") }}<span>Pause updates</span></button>
+        <a class="btn btn-sm btn-ghost" href="{{ url_for('pages.logs') }}">Open audit logs {{ icon("arrow-right", "i-sm") }}</a>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="table" style="min-width:880px">
+        <thead><tr><th scope="col">Time</th><th scope="col">Event</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Source IP</th><th scope="col">Outcome</th><th scope="col">Severity</th><th scope="col">Origin</th><th scope="col"><span class="sr-only">Details</span></th></tr></thead>
+        <tbody id="feedBody"><tr><td colspan="9"><div class="skeleton" style="height:120px"></div></td></tr></tbody>
+      </table>
+    </div>
+    <div class="note-text">Rows marked <b>Simulated</b> were produced by the Event Simulator through the backend. <b>Live</b> rows come from real use of this app (sign-ins, admin actions). No external network traffic is monitored.</div>
+  </section>
+</div>
+{% endblock %}
+{% block overlay %}{% if play_intro %}{% include "_intro.html" %}{% endif %}{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/network.js') }}"></script>
+<script src="{{ url_for('static', filename='js/intro.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

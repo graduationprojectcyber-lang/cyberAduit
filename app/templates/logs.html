@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% from "_filter_options.html" import action_options, outcome_options, severity_options, origin_options %}
+{% block title %}Audit logs{% endblock %}
+{% block crumbs %}Investigate <span aria-hidden="true">/</span> <span class="current">Audit logs</span>{% endblock %}
+{% block heading %}Audit log explorer{% endblock %}
+{% block subheading %}Server-side search, filtering and sorting · records are read-only for every role{% endblock %}
+{% block content %}
+<div class="row" style="justify-content:flex-end;margin-top:-6px">
+  <span class="status-pill ok" title="SQLite triggers reject UPDATE and DELETE on the audit table">{{ icon("lock", "i-sm") }}Append-only</span>
+  {% if has_role("analyst") %}
+  <a class="btn" id="exportCsv" href="{{ url_for('pages.export_csv') }}">{{ icon("download", "i-sm") }}Export CSV</a>
+  {% endif %}
+</div>
+
+<form class="card rise" id="filterForm" aria-label="Filter audit events" novalidate>
+  <div class="filters">
+    <label class="field">Search
+      <input class="input" type="search" name="q" placeholder="Text or EVT-000123" maxlength="100">
+    </label>
+    <label class="field">Username
+      <input class="input" type="text" name="actor" placeholder="Any user" maxlength="64">
+    </label>
+    <label class="field">Source IP
+      <input class="input mono" type="text" name="ip" placeholder="e.g. 10.0.4.23" maxlength="64">
+    </label>
+    <label class="field">Action<select class="select" name="action">{{ action_options() }}</select></label>
+    <label class="field">Outcome<select class="select" name="outcome">{{ outcome_options() }}</select></label>
+    <label class="field">Severity<select class="select" name="severity">{{ severity_options() }}</select></label>
+    <label class="field">Origin<select class="select" name="origin">{{ origin_options() }}</select></label>
+    <label class="field">From<input class="input" type="date" name="start"></label>
+    <label class="field">To<input class="input" type="date" name="end"></label>
+  </div>
+  <div class="chips">
+    <span id="chips" class="chips"></span>
+    <span id="resultCount" class="muted" style="font-size:12.5px" aria-live="polite"></span>
+    <span style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-ghost" type="button" id="clearFilters">Clear filters</button>
+      <button class="btn btn-primary" type="submit">{{ icon("filter", "i-sm") }}Apply filters</button>
+    </span>
+  </div>
+</form>
+
+<section class="card rise rise-2" aria-label="Audit events" style="padding:0;gap:0;overflow:hidden">
+  <div class="table-wrap" style="border:0;border-radius:0">
+    <table class="table" style="min-width:960px">
+      <thead><tr id="headRow"></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="table-foot" style="padding:12px 14px;border-top:1px solid var(--line-soft)">
+    <span class="muted num" id="pageInfo" style="font-size:12.5px"></span>
+    <label class="field" style="flex-direction:row;align-items:center;gap:8px">Rows
+      <select class="select" id="perPage" style="width:auto;height:32px"><option>10</option><option selected>25</option><option>50</option><option>100</option></select>
+    </label>
+    <nav class="pager" id="pager" aria-label="Pagination"></nav>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/logs.js') }}"></script>{% endblock %}

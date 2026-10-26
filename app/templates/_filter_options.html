@@ -1,0 +1,35 @@
+{% macro action_options() -%}
+<option value="">All actions</option>
+<option value="login">Login</option>
+<option value="logout">Logout</option>
+<option value="file_create">File creation</option>
+<option value="file_modify">File modification</option>
+<option value="file_delete">File deletion</option>
+<option value="user_management">User management</option>
+<option value="permission">Permission changes</option>
+<option value="alert">Alert handling</option>
+<option value="other">Other activity</option>
+{%- endmacro %}
+
+{% macro outcome_options() -%}
+<option value="">Any outcome</option>
+<option value="success">Success</option>
+<option value="failed">Failed</option>
+<option value="denied">Denied</option>
+{%- endmacro %}
+
+{% macro severity_options() -%}
+<option value="">Any severity</option>
+<option value="info">Info</option>
+<option value="low">Low</option>
+<option value="medium">Medium</option>
+<option value="high">High</option>
+<option value="critical">Critical</option>
+{%- endmacro %}
+
+{% macro origin_options() -%}
+<option value="">Any origin</option>
+<option value="live">Live (real app use)</option>
+<option value="simulated">Simulated</option>
+<option value="seed">Demo seed</option>
+{%- endmacro %}

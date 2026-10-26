@@ -1,0 +1,30 @@
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="System initialization">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="glow-bg" aria-hidden="true" style="top:38%"></div>
+  <div class="scan" aria-hidden="true"></div>
+  <div class="intro-top">
+    <span class="ver">v{{ app_version }} · local instance</span>
+    <button class="btn btn-ghost" type="button" id="introSkip">Skip intro <svg class="i i-sm" aria-hidden="true"><use href="#i-arrow-right"></use></svg></button>
+  </div>
+  <div class="intro-inner">
+    <svg class="emblem" width="124" height="146" viewBox="0 0 120 140" fill="none" role="img" aria-label="CyberAudit Monitor emblem">
+      <circle class="fade-in" cx="60" cy="70" r="58" stroke="#27D8FF" stroke-opacity=".1" stroke-dasharray="2 6" style="animation-delay:1.2s"></circle>
+      <path class="draw" d="M60 6 L108 24 V62 C108 96 88 120 60 134 C32 120 12 96 12 62 V24 Z" stroke="#27D8FF" stroke-width="2" stroke-linejoin="round"></path>
+      <path class="fade-in" d="M60 18 L97 32 V62 C97 89 82 108 60 120 C38 108 23 89 23 62 V32 Z" fill="#071426" stroke="#1B3556" stroke-width="1" style="animation-delay:1.1s"></path>
+      <path class="draw2" d="M32 72 H47 L53 56 L63 90 L70 72 H88" stroke="#E8EEF7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path class="light" d="M60 6 L108 24 V62 C108 96 88 120 60 134 C32 120 12 96 12 62 V24 Z" stroke="#BFF4FF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+    <h1>CYBERAUDIT MONITOR</h1>
+    <p class="subtitle">{{ app_subtitle }}</p>
+    <section class="init" aria-label="Initialization steps" aria-live="polite">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span class="section-label">System initialization</span>
+        <span class="mono dim" style="font-size:11px">live backend checks</span>
+      </div>
+      <ol id="introSteps"></ol>
+      <div class="init-bar"><span id="introBar"></span></div>
+    </section>
+    <div class="cta" id="introCta"></div>
+  </div>
+  <p class="foot">Each step completes only when the local backend answers. This is a start-up sequence — no network scanning is performed.</p>
+</div>

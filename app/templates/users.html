@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Users{% endblock %}
+{% block crumbs %}Operate <span aria-hidden="true">/</span> <span class="current">Users</span>{% endblock %}
+{% block heading %}User management{% endblock %}
+{% block subheading %}Demo accounts and roles · every change is written to the audit trail{% endblock %}
+{% block content %}
+<section class="card rise" aria-label="Users">
+  <div class="card-head">
+    <label class="search" style="width:320px">{{ icon("search", "i-sm") }}<span class="sr-only">Search users</span>
+      <input type="search" id="userSearch" placeholder="Search username or name" maxlength="64"></label>
+    <button class="btn btn-primary" type="button" id="newUser">{{ icon("plus", "i-sm") }}New user</button>
+  </div>
+  <div class="table-wrap">
+    <table class="table" style="min-width:900px">
+      <thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Status</th><th scope="col">Created</th><th scope="col">Last sign-in</th><th scope="col" class="right">Actions</th></tr></thead>
+      <tbody id="userRows"></tbody>
+    </table>
+  </div>
+  <div class="note-text">Safeguards enforced on the server: you cannot change your own role or deactivate yourself, the last active administrator cannot be demoted or deactivated, and password hashes are never sent to the browser. Accounts are deactivated rather than deleted so their audit history stays intact.</div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/users.js') }}"></script>{% endblock %}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · {{ app_name }}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+<main class="login-page">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="glow-bg" aria-hidden="true"></div>
+  <div class="login-card">
+    <svg class="emblem" width="96" height="112" viewBox="0 0 120 140" fill="none" role="img" aria-label="CyberAudit Monitor emblem">
+      <path class="draw" d="M60 6 L108 24 V62 C108 96 88 120 60 134 C32 120 12 96 12 62 V24 Z" stroke="#27D8FF" stroke-width="2.2" stroke-linejoin="round"></path>
+      <path class="fade-in" d="M60 18 L97 32 V62 C97 89 82 108 60 120 C38 108 23 89 23 62 V32 Z" fill="#071426" stroke="#1B3556" stroke-width="1" style="animation-delay:1s"></path>
+      <path class="draw2" d="M32 72 H47 L53 56 L63 90 L70 72 H88" stroke="#E8EEF7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      <path class="light" d="M60 6 L108 24 V62 C108 96 88 120 60 134 C32 120 12 96 12 62 V24 Z" stroke="#BFF4FF" stroke-width="2.8" stroke-linecap="round"></path>
+    </svg>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+      <h1 class="wordmark">CYBERAUDIT MONITOR</h1>
+      <div class="muted rise" style="animation-delay:.9s;text-align:center">{{ app_subtitle }}</div>
+      <div class="tagline rise" style="animation-delay:1.1s">Observe · Investigate · Understand</div>
+    </div>
+    <form class="login-form" method="post" action="{{ url_for('pages.login', next=request.args.get('next')) }}" autocomplete="on">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if error %}<div class="error-box" role="alert">{{ error }}</div>{% endif %}
+      <label class="field">Username
+        <input class="input" type="text" name="username" required maxlength="64" autocomplete="username" autofocus value="{{ request.form.get('username', '') }}">
+      </label>
+      <label class="field">Password
+        <input class="input" type="password" name="password" required maxlength="128" autocomplete="current-password">
+      </label>
+      <button class="btn btn-primary btn-lg" type="submit">Sign in</button>
+      <div class="demo-creds">
+        Demo accounts (fictional, local only):<br>
+        <code>admin</code> / <code>Admin@12345</code> — Administrator<br>
+        <code>s.karim</code> / <code>Analyst@12345</code> — Security Analyst<br>
+        <code>m.ali</code> / <code>Viewer@12345</code> — Viewer<br>
+        <span class="dim">Every sign-in attempt, including failures, is written to the audit log.</span>
+      </div>
+    </form>
+    <div class="note-text" style="text-align:center">v{{ app_version }} · local graduation demo · no external network is monitored</div>
+  </div>
+</main>
+</body>
+</html>

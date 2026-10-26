@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import icon %}
+{% block title %}Detection rules{% endblock %}
+{% block crumbs %}Investigate <span aria-hidden="true">/</span> <span class="current">Detection rules</span>{% endblock %}
+{% block heading %}Detection engine{% endblock %}
+{% block subheading %}Deterministic threshold rules evaluated after every audit write · no machine learning or external threat intelligence{% endblock %}
+{% block content %}
+<section class="card rise" aria-label="How detection works">
+  <div class="card-head"><div><h2>How a rule fires</h2><div class="sub">The same path runs for real sign-ins, administrative actions and simulated events.</div></div></div>
+  <ol class="play-steps" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+    <li class="play-step done"><span class="h"><span class="num">1</span>WRITE</span><span class="ttl">Event appended to <span class="mono">audit_events</span></span><span class="res">hash-chained, append-only</span></li>
+    <li class="play-step done"><span class="h"><span class="num">2</span>MATCH</span><span class="ttl">Applicable rules selected</span><span class="res">e.g. failed login → R-01, R-02</span></li>
+    <li class="play-step done"><span class="h"><span class="num">3</span>COUNT</span><span class="ttl">Matching events counted in the time window</span><span class="res">parameterized SQL query</span></li>
+    <li class="play-step done"><span class="h"><span class="num">4</span>COMPARE</span><span class="ttl">Count compared with the threshold</span><span class="res">count ≥ threshold → match</span></li>
+    <li class="play-step done"><span class="h"><span class="num">5</span>ALERT</span><span class="ttl">Alert opened, or evidence attached to the open one</span><span class="res">alert.created is audited</span></li>
+  </ol>
+</section>
+<section class="card rise rise-2" aria-label="Rules">
+  <div class="card-head">
+    <div><h2>Configured rules</h2><div class="sub" id="ruleSub">Loading…</div></div>
+  </div>
+  <div class="table-wrap">
+    <table class="table" style="min-width:980px">
+      <thead><tr><th scope="col">Rule</th><th scope="col">Enabled</th><th scope="col">Threshold</th><th scope="col">Window (min)</th>
+        <th scope="col" class="right">Matching events · 24 h</th><th scope="col" class="right">Alerts (open)</th><th scope="col">Last triggered</th><th scope="col"><span class="sr-only">Save</span></th></tr></thead>
+      <tbody id="ruleRows"></tbody>
+    </table>
+  </div>
+  <div class="note-text">Thresholds accept whole numbers 1–100 and windows 1–1440 minutes; the server validates every change, records it as a <span class="mono">rule.update</span> audit event, and only administrators may save.</div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/rules.js') }}"></script>{% endblock %}

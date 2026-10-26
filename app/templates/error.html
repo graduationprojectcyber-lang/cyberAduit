@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ code }} · {{ app_name }}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+<main class="login-page">
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="login-card" style="text-align:center">
+    <div class="mono" style="font-size:56px;font-weight:500;color:var(--cyan)">{{ code }}</div>
+    <h1 style="font-size:22px">{{ message }}</h1>
+    <p class="muted" style="margin:0">{% if code == 403 %}The attempt was recorded in the audit trail.{% else %}Use the links below to continue.{% endif %}</p>
+    <div style="display:flex;gap:8px;justify-content:center">
+      <a class="btn btn-primary" href="{{ url_for('pages.dashboard') }}">Go to dashboard</a>
+      <a class="btn" href="{{ url_for('pages.login') }}">Sign in</a>
+    </div>
+  </div>
+</main>
+</body>
+</html>
